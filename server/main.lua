@@ -2,10 +2,10 @@ local players = {}
 local glm = require 'glm'
 
 CreateThread(function()
-    for _, player in pairs(Ox.GetPlayers({ groups = Config.PoliceGroups })) do
+    for _, player in pairs(Ox.GetPlayers()) do
         local inService = player.get('inService')
 
-        if inService and table.contains(Config.PoliceGroups, inService) then
+        if inService and player.getGroup(inService) then
             players[player.source] = player
         end
     end
@@ -15,7 +15,7 @@ RegisterServerEvent('ox:setPlayerInService', function(group)
     local player = Ox.GetPlayer(source)
 
     if player then
-        if group and table.contains(Config.PoliceGroups, group) and player.hasGroup(Config.PoliceGroups) then
+        if group and player.getGroup(group) then
             players[source] = player
             return player.set('inService', group, true)
         end
@@ -24,6 +24,15 @@ RegisterServerEvent('ox:setPlayerInService', function(group)
     end
 
     players[source] = nil
+end)
+
+AddEventHandler('onResourceStart', function()
+    -- Check if group exists in the database and if not, create it using Ox.CreateGroup(data)
+    for _, group in ipairs(Config.PoliceGroups) do
+        if not Ox.GetGroup(group.name) then
+            Ox.CreateGroup(group)
+        end
+    end
 end)
 
 AddEventHandler('ox:playerLogout', function(source)
@@ -108,7 +117,7 @@ RegisterServerEvent('ox_police:collectEvidence', function(nodes)
         end
     end
 
-    lib.notify(source, {type = 'success', title = 'Evidence collected'})
+    lib.notify(source, { type = 'success', title = 'Evidence collected' })
 end)
 
 RegisterServerEvent('ox_police:deploySpikestrip', function(data)
@@ -149,4 +158,9 @@ RegisterServerEvent('ox_police:retrieveSpikestrip', function(netId)
     DeleteEntity(spike)
 
     exports.ox_inventory:AddItem(source, 'spikestrip', 1)
+end)
+
+RegisterServerEvent('ox_police:impoundVehicle', function(netid)
+    local vehicle = NetworkGetEntityFromNetworkId(netid)
+    DeleteEntity(vehicle)
 end)

@@ -18,7 +18,8 @@ exports.ox_target:addGlobalPlayer({
         label = 'Escort',
         distance = 1.5,
         canInteract = function(entity)
-            return IsPedCuffed(entity) and not IsEntityAttachedToEntity(entity, cache.ped) and not playerState.invBusy
+            return IsPedCuffed(entity) and not IsEntityAttachedToEntity(entity, cache.ped) and not playerState.invBusy and
+            InService
         end,
         onSelect = function(data)
             escortPlayer(data.entity)
@@ -29,7 +30,8 @@ exports.ox_target:addGlobalPlayer({
         label = 'Release',
         distance = 1.5,
         canInteract = function(entity)
-            return IsPedCuffed(entity) and IsEntityAttachedToEntity(entity, cache.ped) and not playerState.invBusy
+            return IsPedCuffed(entity) and IsEntityAttachedToEntity(entity, cache.ped) and not playerState.invBusy and
+            InService
         end,
         onSelect = function(data)
             escortPlayer(data.entity)

@@ -12,7 +12,7 @@ local function cuffPlayer(ped)
 
     FreezeEntityPosition(cache.ped, true)
     SetCurrentPedWeapon(cache.ped, `WEAPON_UNARMED`, true)
-    AttachEntityToEntity(cache.ped, ped, 11816, -0.07, -0.58, 0.0, 0.0, 0.0, 0.0, false, false , false, true, 2, true)
+    AttachEntityToEntity(cache.ped, ped, 11816, -0.07, -0.58, 0.0, 0.0, 0.0, 0.0, false, false, false, true, 2, true)
 
     local dict = state and 'mp_arrest_paired' or 'mp_arresting'
     lib.requestAnimDict(dict)
@@ -39,13 +39,13 @@ local GetIsTaskActive = GetIsTaskActive
 local IsPedRagdoll = IsPedRagdoll
 
 local function canCuffPed(ped)
-	return IsPedFatallyInjured(ped)
-    or GetIsTaskActive(ped, 0)
-    or IsPedRagdoll(ped)
-	or IsEntityPlayingAnim(ped, 'dead', 'dead_a', 3)
-    or IsEntityPlayingAnim(ped, 'missminuteman_1ig_2', 'handsup_base', 3)
-	or IsEntityPlayingAnim(ped, 'missminuteman_1ig_2', 'handsup_enter', 3)
-	or IsEntityPlayingAnim(ped, 'random@mugging3', 'handsup_standing_base', 3)
+    return IsPedFatallyInjured(ped)
+        or GetIsTaskActive(ped, 0)
+        or IsPedRagdoll(ped)
+        or IsEntityPlayingAnim(ped, 'dead', 'dead_a', 3)
+        or IsEntityPlayingAnim(ped, 'missminuteman_1ig_2', 'handsup_base', 3)
+        or IsEntityPlayingAnim(ped, 'missminuteman_1ig_2', 'handsup_enter', 3)
+        or IsEntityPlayingAnim(ped, 'random@mugging3', 'handsup_standing_base', 3)
 end
 
 exports.ox_target:addGlobalPlayer({
@@ -56,7 +56,7 @@ exports.ox_target:addGlobalPlayer({
         distance = 1.5,
         items = 'handcuffs',
         canInteract = function(entity)
-            return canCuffPed(entity) and not IsPedCuffed(entity) and not playerState.invBusy
+            return canCuffPed(entity) and not IsPedCuffed(entity) and not playerState.invBusy and InService
         end,
         onSelect = function(data)
             cuffPlayer(data.entity)
@@ -69,7 +69,7 @@ exports.ox_target:addGlobalPlayer({
         distance = 1.5,
         items = 'handcuffkey',
         canInteract = function(entity)
-            return IsPedCuffed(entity) and not playerState.invBusy
+            return IsPedCuffed(entity) and not playerState.invBusy and InService
         end,
         onSelect = function(data)
             cuffPlayer(data.entity)
