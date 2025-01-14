@@ -5,7 +5,8 @@ for _, group in ipairs(Config.PoliceGroups) do
     table.insert(PoliceGroupNames, group.name)
 end
 
-InService = player and player.inService and table.contains(PoliceGroupNames, player.inService) and player.getGroup(PoliceGroupNames) ~= nil
+InService = player and player.inService and table.contains(PoliceGroupNames, player.inService) and
+    player.getGroup(PoliceGroupNames) ~= nil
 
 RegisterCommand('duty', function()
     local wasInService = InService
@@ -18,7 +19,7 @@ RegisterCommand('duty', function()
             type = 'error'
         })
     else
-        TriggerServerEvent('ox:setPlayerInService', InService)
+        TriggerServerEvent('ox:setPlayerInService', InService and group or false)
         lib.notify({
             description = InService and 'In Service' or 'Out of Service',
             type = 'success'

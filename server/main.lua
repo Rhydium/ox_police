@@ -27,10 +27,36 @@ RegisterServerEvent('ox:setPlayerInService', function(group)
 end)
 
 AddEventHandler('onResourceStart', function()
+    Wait(1000)
+
     -- Check if group exists in the database and if not, create it using Ox.CreateGroup(data)
     for _, group in ipairs(Config.PoliceGroups) do
         if not Ox.GetGroup(group.name) then
             Ox.CreateGroup(group)
+        end
+    end
+
+    -- Set the group permissions for the police groups
+    -- Ox.SetGroupPermissions(groupName, grade, permission, value)
+    for _, group in ipairs(Config.PoliceGroups) do
+        local groupName = group.name
+
+        -- Check if the group has grades defined
+        if group.grades then
+            for gradeIndex, grade in ipairs(group.grades) do
+                -- Check if the grade has specific permissions
+                if grade.permissions then
+                    for _, permission in ipairs(grade.permissions) do
+                        local permissionName = permission.permission
+                        local permissionValue = permission.value
+
+                        -- Set the permission for the group and grade
+                        Ox.SetGroupPermission(groupName, gradeIndex, permissionName, permissionValue)
+                        print(string.format("Permission set: %s, Grade: %d, Permission: %s, Value: %s",
+                            groupName, gradeIndex, permissionName, permissionValue))
+                    end
+                end
+            end
         end
     end
 end)
@@ -42,6 +68,10 @@ end)
 lib.callback.register('ox_police:isPlayerInService', function(source, target)
     return players[target or source]
 end)
+
+function IsPlayerInService(source)
+    return players[source]
+end
 
 lib.callback.register('ox_police:setPlayerCuffs', function(source, target)
     local player = Ox.GetPlayer(source)
@@ -158,9 +188,4 @@ RegisterServerEvent('ox_police:retrieveSpikestrip', function(netId)
     DeleteEntity(spike)
 
     exports.ox_inventory:AddItem(source, 'spikestrip', 1)
-end)
-
-RegisterServerEvent('ox_police:impoundVehicle', function(netid)
-    local vehicle = NetworkGetEntityFromNetworkId(netid)
-    DeleteEntity(vehicle)
 end)
